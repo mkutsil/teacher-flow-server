@@ -1,0 +1,35 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DIRECT_URL") // посилання на базу з .env
+}
+
+model Student {
+  id        Int       @id @default(autoincrement())
+  name      String
+  groups    Group[]   @relation("GroupStudents")
+  lessons   Lesson[]  @relation("StudentLessons")
+  createdAt DateTime  @default(now())
+}
+
+model Lesson {
+  id        Int       @id @default(autoincrement())
+  title     String
+  date      DateTime
+  homework  String? 
+  group     Group     @relation(fields: [groupId], references: [id])
+  groupId   Int
+  sentToTelegram Boolean @default(false)
+  createdAt DateTime  @default(now())
+  students  Student[] @relation("StudentLessons")
+}
+
+model Group {
+  id        Int       @id @default(autoincrement())
+  name      String
+  students  Student[] @relation("GroupStudents")
+  lessons   Lesson[]
+}
